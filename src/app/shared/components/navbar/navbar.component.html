@@ -1,0 +1,40 @@
+<nav class="navbar" [class.scrolled]="scrolled">
+  <div class="container nav-inner">
+    <a routerLink="/" class="logo">🎓 <span>LearnHub</span></a>
+
+    <div class="links" [class.open]="menuOpen">
+      <a routerLink="/courses" routerLinkActive="active" class="nav-link">Courses</a>
+
+      <ng-container *ngIf="!loggedIn">
+        <a routerLink="/auth/login" routerLinkActive="active" class="nav-link">Login</a>
+        <a routerLink="/auth/register" class="btn btn-primary btn-sm">Get Started</a>
+      </ng-container>
+
+      <ng-container *ngIf="loggedIn">
+        <a [routerLink]="dashRoute" routerLinkActive="active" class="nav-link">Dashboard</a>
+        <div class="user-menu" (click)="dropOpen = !dropOpen">
+          <div class="avatar">{{initials}}</div>
+          <span class="uname">{{user?.firstName}}</span>
+          <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+
+          <div class="dropdown" *ngIf="dropOpen">
+            <div class="drop-header">
+              <strong>{{user?.firstName}} {{user?.lastName}}</strong>
+              <span class="badge badge-primary">{{user?.role}}</span>
+            </div>
+            <div class="drop-body">
+              <a [routerLink]="dashRoute" class="drop-item">📊 Dashboard</a>
+              <a routerLink="/courses" class="drop-item">📚 Courses</a>
+              <div class="drop-divider"></div>
+              <button (click)="logout()" class="drop-item danger">🚪 Logout</button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <button class="burger" (click)="menuOpen = !menuOpen">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>

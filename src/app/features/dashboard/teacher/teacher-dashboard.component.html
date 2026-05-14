@@ -1,0 +1,218 @@
+<div class="page">
+  <div class="container">
+    <div class="page-header">
+      <div><h1>Teacher Dashboard 👩‍🏫</h1><p>Welcome back, {{currentUser?.firstName}}!</p></div>
+      <button class="btn btn-primary" (click)="showCourseModal=true">+ New Course</button>
+    </div>
+
+    <div class="alert alert-success" *ngIf="success">✅ {{success}}</div>
+    <div class="alert alert-danger"  *ngIf="error">❌ {{error}}</div>
+
+    <!-- Stats -->
+    <div class="grid-3 fade-in" style="margin-bottom:24px">
+      <div class="stat-card stat-purple"><div class="icon">📚</div><div><h3>{{courses.length}}</h3><p>My Courses</p></div></div>
+      <div class="stat-card stat-blue"><div class="icon">👥</div><div><h3>{{totalStudents}}</h3><p>Total Students</p></div></div>
+      <div class="stat-card stat-green"><div class="icon">✅</div><div><h3>{{publishedCount}}</h3><p>Published</p></div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab" [class.active]="tab==='courses'" (click)="tab='courses'">📚 My Courses</button>
+      <button class="tab" [class.active]="tab==='lessons'" (click)="tab='lessons'" *ngIf="selectedCourse">
+        📖 Lessons <span class="sel-name">— {{selectedCourse?.title | slice:0:20}}</span>
+      </button>
+      <button class="tab" [class.active]="tab==='assignments'" (click)="tab='assignments'" *ngIf="selectedCourse">
+        📝 Assignments
+      </button>
+      <button class="tab" [class.active]="tab==='submissions'" (click)="tab='submissions'" *ngIf="selectedAssignment">
+        📋 Submissions <span class="sel-name">— {{selectedAssignment?.title | slice:0:20}}</span>
+      </button>
+    </div>
+
+    <div class="spinner" *ngIf="loading"></div>
+
+    <!-- COURSES TAB -->
+    <div *ngIf="!loading && tab==='courses'" class="fade-in">
+      <div class="empty-state" *ngIf="courses.length===0">
+        <div class="icon">📝</div><h3>No courses yet</h3><p>Create your first course!</p>
+        <button class="btn btn-primary" (click)="showCourseModal=true">+ Create Course</button>
+      </div>
+      <div class="table-wrap" *ngIf="courses.length>0">
+        <table class="table">
+          <thead><tr><th>Course</th><th>Category</th><th>Students</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let c of courses">
+              <td class="fw-600">{{c.title}}</td>
+              <td><span class="badge badge-primary">{{c.category}}</span></td>
+              <td>{{c.enrolledStudents}}</td>
+              <td><span class="badge" [ngClass]="c.status==='Published'?'badge-success':'badge-gray'">{{c.status}}</span></td>
+              <td>
+                <div class="action-btns">
+                  <button class="btn btn-outline btn-sm" (click)="selectCourse(c)">Manage</button>
+                  <button class="btn btn-danger btn-sm" (click)="deleteCourse(c.id)">Delete</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LESSONS TAB -->
+    <div *ngIf="!loading && tab==='lessons' && selectedCourse" class="fade-in">
+      <div class="tab-header">
+        <h3>Lessons for: {{selectedCourse.title}}</h3>
+        <button class="btn btn-primary btn-sm" (click)="showLessonModal=true">+ Add Lesson</button>
+      </div>
+      <div class="empty-state" *ngIf="lessons.length===0">
+        <div class="icon">📖</div><h3>No lessons yet</h3><p>Add your first lesson!</p>
+      </div>
+      <div class="table-wrap" *ngIf="lessons.length>0">
+        <table class="table">
+          <thead><tr><th>#</th><th>Title</th><th>Content Preview</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let l of lessons">
+              <td>{{l.orderIndex}}</td>
+              <td class="fw-600">{{l.title}}</td>
+              <td class="text-light">{{l.content | slice:0:60}}...</td>
+              <td><button class="btn btn-danger btn-sm" (click)="deleteLesson(l.id)">Delete</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:16px">
+        <button class="btn btn-ghost btn-sm" (click)="tab='assignments'">→ Go to Assignments</button>
+      </div>
+    </div>
+
+    <!-- ASSIGNMENTS TAB -->
+    <div *ngIf="!loading && tab==='assignments' && selectedCourse" class="fade-in">
+      <div class="tab-header">
+        <h3>Assignments for: {{selectedCourse.title}}</h3>
+        <button class="btn btn-primary btn-sm" (click)="showAssignModal=true">+ Add Assignment</button>
+      </div>
+      <div class="empty-state" *ngIf="assignments.length===0">
+        <div class="icon">📝</div><h3>No assignments yet</h3><p>Create your first assignment!</p>
+      </div>
+      <div class="table-wrap" *ngIf="assignments.length>0">
+        <table class="table">
+          <thead><tr><th>Title</th><th>Due Date</th><th>Max Score</th><th>Submissions</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let a of assignments">
+              <td class="fw-600">{{a.title}}</td>
+              <td>{{a.dueDate | date:'MMM d, y'}}</td>
+              <td>{{a.maxScore}}</td>
+              <td><span class="badge badge-info">{{a.submissionsCount}}</span></td>
+              <td><button class="btn btn-outline btn-sm" (click)="selectAssignment(a)">View Submissions</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SUBMISSIONS TAB -->
+    <div *ngIf="!loading && tab==='submissions' && selectedAssignment" class="fade-in">
+      <div class="tab-header">
+        <h3>Submissions: {{selectedAssignment.title}}</h3>
+        <span class="badge badge-primary">{{submissions.length}} submissions</span>
+      </div>
+      <div class="empty-state" *ngIf="submissions.length===0">
+        <div class="icon">📋</div><h3>No submissions yet</h3>
+      </div>
+      <div class="table-wrap" *ngIf="submissions.length>0">
+        <table class="table">
+          <thead><tr><th>Student</th><th>Status</th><th>Score</th><th>Submitted</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let s of submissions">
+              <td class="fw-600">{{s.studentFullName}}</td>
+              <td><span class="badge" [ngClass]="statusBadge(s.status)">{{s.status}}</span></td>
+              <td>{{s.score !== null ? s.score+'/'+selectedAssignment.maxScore : '—'}}</td>
+              <td>{{s.submittedAt | date:'MMM d, HH:mm'}}</td>
+              <td><button class="btn btn-primary btn-sm" (click)="openGrade(s)">{{s.status==='Graded'?'Re-grade':'Grade'}}</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Course Modal -->
+<div class="modal-overlay" *ngIf="showCourseModal" (click)="showCourseModal=false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header"><h3>Create New Course</h3><button class="close-btn" (click)="showCourseModal=false">✕</button></div>
+    <form [formGroup]="courseForm" (ngSubmit)="createCourse()">
+      <div class="form-group"><label class="form-label">Title</label><input formControlName="title" class="form-control" placeholder="Course title"></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea formControlName="description" class="form-control" rows="3" placeholder="What will students learn?"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Category</label><input formControlName="category" class="form-control" placeholder="e.g. Programming"></div>
+        <div class="form-group"><label class="form-label">Duration (hours)</label><input type="number" formControlName="duration" class="form-control"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Price ($) — 0 for free</label><input type="number" formControlName="price" class="form-control"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" (click)="showCourseModal=false">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="courseForm.invalid">Create</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Lesson Modal -->
+<div class="modal-overlay" *ngIf="showLessonModal" (click)="showLessonModal=false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header"><h3>Add Lesson</h3><button class="close-btn" (click)="showLessonModal=false">✕</button></div>
+    <form [formGroup]="lessonForm" (ngSubmit)="createLesson()">
+      <div class="form-group"><label class="form-label">Title</label><input formControlName="title" class="form-control" placeholder="Lesson title"></div>
+      <div class="form-group"><label class="form-label">Content</label><textarea formControlName="content" class="form-control" rows="4" placeholder="Lesson content..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Attachment URL (optional)</label><input formControlName="attachmentUrl" class="form-control" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Order Index</label><input type="number" formControlName="orderIndex" class="form-control"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" (click)="showLessonModal=false">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="lessonForm.invalid">Add Lesson</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Assignment Modal -->
+<div class="modal-overlay" *ngIf="showAssignModal" (click)="showAssignModal=false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header"><h3>Create Assignment</h3><button class="close-btn" (click)="showAssignModal=false">✕</button></div>
+    <form [formGroup]="assignForm" (ngSubmit)="createAssignment()">
+      <div class="form-group"><label class="form-label">Title</label><input formControlName="title" class="form-control" placeholder="Assignment title"></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea formControlName="description" class="form-control" rows="3" placeholder="Assignment description..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Due Date</label><input type="datetime-local" formControlName="dueDate" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Max Score</label><input type="number" formControlName="maxScore" class="form-control"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" (click)="showAssignModal=false">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="assignForm.invalid">Create</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Grade Modal -->
+<div class="modal-overlay" *ngIf="showGradeModal" (click)="showGradeModal=false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header"><h3>Grade Submission</h3><button class="close-btn" (click)="showGradeModal=false">✕</button></div>
+    <div class="submission-preview" *ngIf="gradeSubmission">
+      <p class="sub-label">Student: <strong>{{gradeSubmission.studentFullName}}</strong></p>
+      <p class="sub-label">Submitted: {{gradeSubmission.submittedAt | date:'MMM d, HH:mm'}}</p>
+      <div class="sub-content">{{gradeSubmission.content}}</div>
+    </div>
+    <form [formGroup]="gradeForm" (ngSubmit)="submitGrade()">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Score (out of {{selectedAssignment?.maxScore}})</label><input type="number" formControlName="score" class="form-control" [max]="selectedAssignment?.maxScore"></div>
+        <div class="form-group"><label class="form-label">Feedback</label><input formControlName="feedback" class="form-control" placeholder="Optional feedback..."></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" (click)="showGradeModal=false">Cancel</button>
+        <button type="submit" class="btn btn-success">Submit Grade</button>
+      </div>
+    </form>
+  </div>
+</div>

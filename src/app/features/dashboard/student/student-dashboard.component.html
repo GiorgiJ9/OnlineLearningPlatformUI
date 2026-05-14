@@ -1,0 +1,163 @@
+<div class="page">
+  <div class="container">
+    <div class="page-header">
+      <div>
+        <h1>My Learning 👨‍🎓</h1>
+        <p>Welcome back, {{currentUser?.firstName}}!</p>
+      </div>
+    </div>
+
+    <div class="alert alert-success" *ngIf="success">✅ {{success}}</div>
+    <div class="alert alert-danger" *ngIf="error">❌ {{error}}</div>
+
+    <!-- Stats -->
+    <div class="grid-3 fade-in" style="margin-bottom:24px">
+      <div class="stat-card stat-purple">
+        <div class="icon">📚</div>
+        <div>
+          <h3>{{enrollments.length}}</h3>
+          <p>Enrolled Courses</p>
+        </div>
+      </div>
+      <div class="stat-card stat-green">
+        <div class="icon">✅</div>
+        <div>
+          <h3>{{completedCount}}</h3>
+          <p>Graded Assignments</p>
+        </div>
+      </div>
+      <div class="stat-card stat-orange">
+        <div class="icon">⏳</div>
+        <div>
+          <h3>{{inProgressCount}}</h3>
+          <p>Pending Review</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab" [class.active]="tab==='courses'" (click)="tab='courses'">📚 My Courses</button>
+      <button class="tab" [class.active]="tab==='lessons'" (click)="tab='lessons'" *ngIf="selectedEnrollment">
+        📖 Lessons <span class="sel-name">— {{selectedEnrollment?.courseTitle | slice:0:20}}</span>
+      </button>
+      <button class="tab" [class.active]="tab==='assignments'" (click)="tab='assignments'" *ngIf="selectedEnrollment">
+        📝 Assignments
+      </button>
+    </div>
+
+    <div class="spinner" *ngIf="loading"></div>
+
+    <!-- COURSES TAB -->
+    <div *ngIf="!loading && tab==='courses'" class="fade-in">
+      <div class="empty-state" *ngIf="enrollments.length===0">
+        <div class="icon">🎯</div>
+        <h3>No courses yet</h3>
+        <p>Browse and enroll in courses to get started!</p>
+        <a routerLink="/courses" class="btn btn-primary">Browse Courses</a>
+      </div>
+      <div class="enroll-grid" *ngIf="enrollments.length>0">
+        <div class="enroll-card" *ngFor="let e of enrollments">
+          <div class="enroll-header">
+            <h3>{{e.courseTitle}}</h3>
+            <span class="badge badge-primary">{{e.progressPercentage}}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="fill" [style.width.%]="e.progressPercentage"></div>
+          </div>
+          <div class="enroll-footer">
+            <span class="date">Enrolled {{e.enrolledAt | date:'MMM d, y'}}</span>
+            <button class="btn btn-outline btn-sm" (click)="selectCourse(e)">Open Course</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LESSONS TAB -->
+    <div *ngIf="!loading && tab==='lessons' && selectedEnrollment" class="fade-in">
+      <h3 class="section-title">📖 Lessons — {{selectedEnrollment.courseTitle}}</h3>
+      <div class="empty-state" *ngIf="lessons.length===0">
+        <div class="icon">📖</div>
+        <h3>No lessons yet</h3>
+        <p>The teacher hasn't added lessons yet.</p>
+      </div>
+      <div class="lesson-list" *ngIf="lessons.length>0">
+        <div class="lesson-item" *ngFor="let l of lessons">
+          <div class="lesson-num">{{l.orderIndex}}</div>
+          <div class="lesson-body">
+            <h4>{{l.title}}</h4>
+            <p>{{l.content}}</p>
+            <a *ngIf="l.attachmentUrl" [href]="l.attachmentUrl" target="_blank" class="attach-link">📎 Attachment</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSIGNMENTS TAB -->
+    <div *ngIf="!loading && tab==='assignments' && selectedEnrollment" class="fade-in">
+      <h3 class="section-title">📝 Assignments — {{selectedEnrollment.courseTitle}}</h3>
+      <div class="empty-state" *ngIf="assignments.length===0">
+        <div class="icon">📝</div>
+        <h3>No assignments yet</h3>
+      </div>
+      <div class="assign-list" *ngIf="assignments.length>0">
+        <div class="assign-card" *ngFor="let a of assignments">
+          <div class="assign-header">
+            <div>
+              <h4>{{a.title}}</h4>
+              <p class="assign-desc">{{a.description}}</p>
+            </div>
+            <div class="assign-meta">
+              <span class="badge badge-warning">Due {{a.dueDate | date:'MMM d'}}</span>
+              <span class="badge badge-primary">Max: {{a.maxScore}}</span>
+            </div>
+          </div>
+          <div class="assign-footer">
+            <ng-container *ngIf="mySubmissions[a.id]; else notSubmitted">
+              <span class="badge" [ngClass]="{
+                  'badge-success': mySubmissions[a.id].status === 'Graded',
+                  'badge-danger':  mySubmissions[a.id].status === 'Late',
+                  'badge-info':    mySubmissions[a.id].status === 'Submitted',
+                  'badge-gray':    mySubmissions[a.id].status === 'Pending'
+                }">
+                {{mySubmissions[a.id].status}}
+              </span>
+              <span class="score" *ngIf="mySubmissions[a.id].score !== null">
+                ✅ Score: <strong>{{mySubmissions[a.id].score}}/{{a.maxScore}}</strong>
+              </span>
+              <span class="feedback" *ngIf="mySubmissions[a.id].feedback">
+                💬 {{mySubmissions[a.id].feedback}}
+              </span>
+            </ng-container>
+            <ng-template #notSubmitted>
+              <button class="btn btn-primary btn-sm" (click)="openSubmit(a)">Submit</button>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Submit Modal -->
+<div class="modal-overlay" *ngIf="showSubmitModal" (click)="showSubmitModal=false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Submit: {{selectedAssignment?.title}}</h3>
+      <button class="close-btn" (click)="showSubmitModal=false">✕</button>
+    </div>
+    <form [formGroup]="submitForm" (ngSubmit)="submitAssignment()">
+      <div class="form-group">
+        <label class="form-label">Your Answer / Solution</label>
+        <textarea formControlName="content" class="form-control" rows="6"
+          placeholder="Write your solution here..."></textarea>
+        <div class="error-msg" *ngIf="submitForm.get('content')?.invalid && submitForm.get('content')?.touched">Content
+          is required.</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" (click)="showSubmitModal=false">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="submitForm.invalid">Submit Assignment</button>
+      </div>
+    </form>
+  </div>
+</div>

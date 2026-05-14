@@ -1,0 +1,64 @@
+<div class="page">
+  <div class="spinner" *ngIf="loading"></div>
+
+  <div *ngIf="!loading && course" class="fade-in">
+    <div class="course-hero">
+      <div class="container">
+        <span class="badge badge-primary">{{course.category}}</span>
+        <h1>{{course.title}}</h1>
+        <p>{{course.description}}</p>
+        <div class="meta">
+          <span>⏱️ {{course.duration}}h</span>
+          <span>👥 {{course.enrolledStudents}} students</span>
+          <span>👨‍🏫 {{course.teacherFullName}}</span>
+        </div>
+        <div class="hero-footer">
+          <span class="price">{{course.price === 0 ? 'FREE' : '$' + course.price}}</span>
+          <button *ngIf="isStudent" class="btn btn-primary btn-lg" (click)="enroll()">Enroll Now</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container course-body">
+      <div class="alert alert-success" *ngIf="success">✅ {{success}}</div>
+      <div class="alert alert-danger"  *ngIf="error">❌ {{error}}</div>
+
+      <!-- Lessons -->
+      <div class="section">
+        <h2>📖 Lessons ({{lessons.length}})</h2>
+        <div class="empty-state" *ngIf="lessons.length === 0">
+          <div class="icon">📖</div><h3>No lessons yet</h3>
+        </div>
+        <div class="lesson-list">
+          <div class="lesson-item" *ngFor="let l of lessons">
+            <div class="lesson-num">{{l.orderIndex}}</div>
+            <div class="lesson-body">
+              <h4>{{l.title}}</h4>
+              <p>{{l.content | slice:0:120}}...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assignments -->
+      <div class="section">
+        <h2>📝 Assignments ({{assignments.length}})</h2>
+        <div class="empty-state" *ngIf="assignments.length === 0">
+          <div class="icon">📝</div><h3>No assignments yet</h3>
+        </div>
+        <div class="assign-list">
+          <div class="assign-item" *ngFor="let a of assignments">
+            <div>
+              <h4>{{a.title}}</h4>
+              <p>{{a.description}}</p>
+            </div>
+            <div class="assign-meta">
+              <span class="badge badge-warning">Due {{a.dueDate | date:'MMM d, y'}}</span>
+              <span class="badge badge-primary">Max: {{a.maxScore}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

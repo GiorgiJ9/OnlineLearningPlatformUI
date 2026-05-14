@@ -1,0 +1,20 @@
+.section-title { font-size:17px; font-weight:700; margin-bottom:16px; }
+.sel-name { font-size:12px; opacity:0.7; font-weight:400; }
+.enroll-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+.enroll-card { background:white; border-radius:var(--radius-lg); padding:20px; box-shadow:var(--shadow); transition:all 0.3s;
+  &:hover { transform:translateY(-3px); box-shadow:var(--shadow-lg); }
+  .enroll-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; h3 { font-size:15px; font-weight:700; flex:1; margin-right:8px; } }
+  .enroll-footer { display:flex; justify-content:space-between; align-items:center; margin-top:14px; .date { font-size:12px; color:var(--text-light); } }
+}
+.lesson-list { display:flex; flex-direction:column; gap:12px; }
+.lesson-item { display:flex; gap:16px; background:white; border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);
+  .lesson-num { width:36px; height:36px; border-radius:50%; background:var(--primary-light); color:var(--primary); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; flex-shrink:0; }
+  .lesson-body { flex:1; h4 { font-size:15px; font-weight:700; margin-bottom:6px; } p { font-size:13px; color:var(--text-light); line-height:1.6; } }
+  .attach-link { display:inline-flex; align-items:center; gap:4px; font-size:13px; color:var(--primary); text-decoration:none; margin-top:8px; &:hover { text-decoration:underline; } }
+}
+.assign-list { display:flex; flex-direction:column; gap:12px; }
+.assign-card { background:white; border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);
+  .assign-header { display:flex; justify-content:space-between; gap:16px; h4 { font-size:15px; font-weight:700; margin-bottom:4px; } .assign-desc { font-size:13px; color:var(--text-light); } .assign-meta { display:flex; flex-direction:column; gap:6px; flex-shrink:0; align-items:flex-end; } }
+  .assign-footer { display:flex; align-items:center; gap:10px; margin-top:14px; padding-top:12px; border-top:1px solid var(--border); .score { font-size:13px; font-weight:600; color:var(--success); } }
+}
+@media (max-width:768px) { .enroll-grid { grid-template-columns:1fr; } }

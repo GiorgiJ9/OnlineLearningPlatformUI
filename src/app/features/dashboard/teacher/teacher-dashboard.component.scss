@@ -1,0 +1,11 @@
+.tab-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;
+  h3 { font-size:17px; font-weight:700; }
+}
+.action-btns { display:flex; gap:8px; }
+.fw-600 { font-weight:600; }
+.text-light { color:var(--text-light); font-size:13px; }
+.sel-name { font-size:12px; opacity:0.7; font-weight:400; }
+.submission-preview { background:var(--bg); border-radius:var(--radius); padding:14px; margin-bottom:16px;
+  .sub-label { font-size:13px; margin-bottom:4px; color:var(--text-light); }
+  .sub-content { margin-top:10px; font-size:14px; line-height:1.6; color:var(--text); border-left:3px solid var(--primary); padding-left:12px; }
+}

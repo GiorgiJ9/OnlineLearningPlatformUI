@@ -1,0 +1,54 @@
+<div class="page">
+  <div class="hero">
+    <div class="container">
+      <h1>Explore Courses</h1>
+      <p>Find the perfect course to advance your skills</p>
+      <div class="search-wrap">
+        <input [(ngModel)]="search" (input)="filter()" class="search-input" placeholder="🔍  Search courses...">
+        <select [(ngModel)]="category" (change)="filter()" class="cat-select">
+          <option value="">All Categories</option>
+          <option *ngFor="let c of categories" [value]="c">{{c}}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="container content">
+    <div class="alert alert-success" *ngIf="success">{{success}}</div>
+    <div class="alert alert-danger"  *ngIf="error">{{error}}</div>
+
+    <div class="spinner" *ngIf="loading"></div>
+
+    <div class="empty-state" *ngIf="!loading && filtered.length===0">
+      <div class="icon">📚</div>
+      <h3>No courses found</h3>
+      <p>Try a different search or category</p>
+    </div>
+
+    <div class="grid-3 fade-in" *ngIf="!loading && filtered.length>0">
+      <div class="course-card" *ngFor="let c of filtered">
+        <div class="card-top">
+          <span class="badge badge-primary">{{c.category}}</span>
+          <span class="badge" [ngClass]="c.price===0 ? 'badge-success' : 'badge-info'">
+            {{c.price===0 ? 'FREE' : '$'+c.price}}
+          </span>
+        </div>
+        <h3 class="course-title">{{c.title}}</h3>
+        <p class="course-desc">{{c.description | slice:0:100}}{{c.description.length>100?'...':''}}</p>
+        <div class="course-meta">
+          <span>⏱️ {{c.duration}}h</span>
+          <span>👥 {{c.enrolledStudents}} students</span>
+        </div>
+        <div class="teacher">
+          <div class="t-avatar">{{c.teacherFullName[0]}}</div>
+          <span>{{c.teacherFullName}}</span>
+        </div>
+        <div class="card-actions">
+          <a [routerLink]="['/courses', c.id]" class="btn btn-outline btn-sm">View Details</a>
+          <button *ngIf="isStudent" (click)="enroll(c.id)" class="btn btn-primary btn-sm">Enroll</button>
+          <a *ngIf="!isLoggedIn" routerLink="/auth/register" class="btn btn-primary btn-sm">Get Started</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
