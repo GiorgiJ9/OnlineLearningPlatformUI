@@ -5,16 +5,18 @@ import { User, Course } from '../../../shared/models/models';
 
 @Component({ selector: 'app-admin-dashboard', templateUrl: './admin-dashboard.component.html', styleUrls: ['./admin-dashboard.component.scss'] })
 export class AdminDashboardComponent implements OnInit {
-  tab: 'pending' | 'users' | 'courses' = 'pending';
+  tab: 'pending' | 'users' | 'courses' | 'resets' = 'pending';
+  setTab(t: 'pending' | 'users' | 'courses' | 'resets') { this.tab = t; }
   pendingUsers: User[] = [];
   allUsers: User[] = [];
   allCourses: Course[] = [];
+  pendingResets: any[] = [];
   loading = true;
   success = ''; error = '';
 
   roles = ['Student', 'Teacher', 'Admin'];
 
-  constructor(private userSvc: UserService, private courseSvc: CourseService) {}
+  constructor(private userSvc: UserService, private courseSvc: CourseService) { }
 
   get stats() {
     return {
@@ -32,6 +34,7 @@ export class AdminDashboardComponent implements OnInit {
     this.userSvc.getPending().subscribe(d => { this.pendingUsers = d; this.loading = false; });
     this.userSvc.getAll().subscribe(d => this.allUsers = d);
     this.courseSvc.getAllForAdmin().subscribe(d => this.allCourses = d);
+    this.userSvc.getPendingResets().subscribe(d => this.pendingResets = d);
   }
 
   approve(user: User) {
@@ -42,6 +45,16 @@ export class AdminDashboardComponent implements OnInit {
         this.notify('User approved successfully!');
       },
       error: () => this.notifyErr('Failed to approve user.')
+    });
+  }
+
+  approveReset(userId: string) {
+    this.userSvc.approveReset(userId).subscribe({
+      next: () => {
+        this.pendingResets = this.pendingResets.filter(r => r.userId !== userId);
+        this.notify('Password reset approved!');
+      },
+      error: () => this.notifyErr('Failed.')
     });
   }
 
@@ -64,18 +77,18 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   toggleCourseStatus(course: Course) {
-  const status = course.status === 'Published' ? 'Draft' : 'Published';
-  this.courseSvc.update(course.id, { status }).subscribe({
-    next: (updated) => {
-      // 204 No Content - updated შეიძლება null იყოს
-      this.allCourses = this.allCourses.map(c =>
-        c.id === course.id ? { ...course, status } : c
-      );
-      this.notify('Course status updated!');
-    },
-    error: () => this.notifyErr('Failed to update.')
-  });
-}
+    const status = course.status === 'Published' ? 'Draft' : 'Published';
+    this.courseSvc.update(course.id, { status }).subscribe({
+      next: (updated) => {
+        // 204 No Content - updated შეიძლება null იყოს
+        this.allCourses = this.allCourses.map(c =>
+          c.id === course.id ? { ...course, status } : c
+        );
+        this.notify('Course status updated!');
+      },
+      error: () => this.notifyErr('Failed to update.')
+    });
+  }
 
   private notify(msg: string) { this.success = msg; setTimeout(() => this.success = '', 3000); }
   private notifyErr(msg: string) { this.error = msg; setTimeout(() => this.error = '', 3000); }

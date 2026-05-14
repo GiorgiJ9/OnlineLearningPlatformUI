@@ -1,0 +1,139 @@
+<div class="home">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-content">
+      <div class="hero-text">
+        <span class="hero-badge">🎓 Online Learning Platform</span>
+        <h1>Learn Without <span class="gradient-text">Limits</span></h1>
+        <p>Access hundreds of courses from expert teachers. Learn at your own pace and get certified.</p>
+        <div class="hero-actions">
+          <a *ngIf="!isLoggedIn" routerLink="/auth/register" class="btn btn-primary btn-lg">Get Started Free</a>
+          <a *ngIf="isLoggedIn" [routerLink]="dashRoute" class="btn btn-primary btn-lg">Go to Dashboard</a>
+          <a routerLink="/courses" class="btn btn-outline btn-lg" style="color:white;border-color:white">Browse
+            Courses</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><strong>500+</strong><span>Courses</span></div>
+          <div class="stat"><strong>10k+</strong><span>Students</span></div>
+          <div class="stat"><strong>200+</strong><span>Teachers</span></div>
+          <div class="stat"><strong>95%</strong><span>Satisfaction</span></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="floating-card card-1">📚 New Course Added</div>
+        <div class="floating-card card-2">✅ Assignment Graded</div>
+        <div class="floating-card card-3">🎯 100% Score!</div>
+        <div class="hero-circle">
+          <span>🎓</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="container">
+      <h2>Everything you need to <span class="gradient-text">succeed</span></h2>
+      <p class="section-sub">Our platform provides all the tools for modern online education</p>
+      <div class="grid-3">
+        <div class="feature-card">
+          <div class="feature-icon">👨‍🏫</div>
+          <h3>Expert Teachers</h3>
+          <p>Learn from verified professionals with real-world experience in their fields.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>Learn Anywhere</h3>
+          <p>Access your courses from any device, anytime. Your progress is always saved.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏆</div>
+          <h3>Get Certified</h3>
+          <p>Complete assignments and get graded by teachers. Earn certificates for your achievements.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Track Progress</h3>
+          <p>Monitor your learning journey with detailed progress tracking and analytics.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Secure Platform</h3>
+          <p>Your data is safe with JWT authentication and role-based access control.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Fast & Modern</h3>
+          <p>Built with cutting-edge technology for the best learning experience possible.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roles -->
+  <section class="roles">
+    <div class="container">
+      <h2>Built for <span class="gradient-text">everyone</span></h2>
+      <p class="section-sub">Different roles for different needs</p>
+      <div class="grid-3">
+        <div class="role-card admin">
+          <div class="role-icon">🛡️</div>
+          <h3>Administrators</h3>
+          <ul>
+            <li>✅ Approve user accounts</li>
+            <li>✅ Manage all users</li>
+            <li>✅ Publish/unpublish courses</li>
+            <li>✅ Approve password resets</li>
+            <li>✅ Full platform control</li>
+          </ul>
+        </div>
+        <div class="role-card teacher">
+          <div class="role-icon">👩‍🏫</div>
+          <h3>Teachers</h3>
+          <ul>
+            <li>✅ Create & manage courses</li>
+            <li>✅ Add lessons & materials</li>
+            <li>✅ Create assignments</li>
+            <li>✅ Grade submissions</li>
+            <li>✅ Monitor student progress</li>
+          </ul>
+        </div>
+        <div class="role-card student">
+          <div class="role-icon">👨‍🎓</div>
+          <h3>Students</h3>
+          <ul>
+            <li>✅ Browse & enroll in courses</li>
+            <li>✅ Access all lessons</li>
+            <li>✅ Submit assignments</li>
+            <li>✅ View grades & feedback</li>
+            <li>✅ Track your progress</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <h2>Ready to start learning?</h2>
+      <p>Join thousands of students and teachers on LearnHub today</p>
+      <div class="cta-actions">
+        <a *ngIf="!isLoggedIn" routerLink="/auth/register" class="btn btn-primary btn-lg">Create Free Account</a>
+        <a *ngIf="isLoggedIn" [routerLink]="dashRoute" class="btn btn-primary btn-lg">Go to Dashboard</a>
+        <a routerLink="/courses" class="btn btn-lg"
+          style="background:rgba(255,255,255,0.15);color:white;border:2px solid rgba(255,255,255,0.4)">Browse
+          Courses</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-logo">🎓 LearnHub</div>
+      <p>© 2026 LearnHub. Online Learning Platform.</p>
+    </div>
+  </footer>
+</div>

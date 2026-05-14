@@ -26,8 +26,8 @@ export class AuthService {
   }
 
   resetPassword(req: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reset-password`, req);
-  }
+  return this.http.post(`${this.apiUrl}/request-reset`, req);
+}
 
   logout(): void {
     sessionStorage.clear();

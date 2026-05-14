@@ -1,7 +1,10 @@
 <div class="page">
   <div class="container">
     <div class="page-header">
-      <div><h1>Admin Panel 🛡️</h1><p>Manage users, approve accounts, oversee courses</p></div>
+      <div>
+        <h1>Admin Panel 🛡️</h1>
+        <p>Manage users, approve accounts, oversee courses</p>
+      </div>
     </div>
 
     <div class="alert alert-success" *ngIf="success">✅ {{success}}</div>
@@ -29,11 +32,16 @@
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="tab" [class.active]="tab==='pending'" (click)="tab='pending'">
-        ⏳ Pending Approvals <span class="badge badge-danger" *ngIf="stats.pending>0">{{stats.pending}}</span>
+      <button class="tab" [class.active]="tab==='pending'" (click)="setTab('pending')">
+        ⏳ Pending Approvals
+        <span class="badge badge-danger" *ngIf="stats.pending>0">{{stats.pending}}</span>
       </button>
-      <button class="tab" [class.active]="tab==='users'" (click)="tab='users'">👥 All Users</button>
-      <button class="tab" [class.active]="tab==='courses'" (click)="tab='courses'">📚 Courses</button>
+      <button class="tab" [class.active]="tab==='users'" (click)="setTab('users')">👥 All Users</button>
+      <button class="tab" [class.active]="tab==='courses'" (click)="setTab('courses')">📚 Courses</button>
+      <button class="tab" [class.active]="tab==='resets'" (click)="setTab('resets')">
+        🔑 Password Resets
+        <span class="badge badge-danger" *ngIf="pendingResets.length>0">{{pendingResets.length}}</span>
+      </button>
     </div>
 
     <div class="spinner" *ngIf="loading"></div>
@@ -47,10 +55,17 @@
       </div>
       <div class="table-wrap" *ngIf="pendingUsers.length>0">
         <table class="table">
-          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Registered</th><th>Action</th></tr></thead>
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Role</th><th>Registered</th><th>Action</th></tr>
+          </thead>
           <tbody>
             <tr *ngFor="let u of pendingUsers">
-              <td><div class="user-cell"><div class="av">{{u.firstName[0]}}{{u.lastName[0]}}</div><span>{{u.firstName}} {{u.lastName}}</span></div></td>
+              <td>
+                <div class="user-cell">
+                  <div class="av">{{u.firstName[0]}}{{u.lastName[0]}}</div>
+                  <span>{{u.firstName}} {{u.lastName}}</span>
+                </div>
+              </td>
               <td>{{u.email}}</td>
               <td><span class="badge" [ngClass]="u.role==='Teacher'?'badge-info':'badge-success'">{{u.role}}</span></td>
               <td>{{u.createdAt | date:'MMM d, y'}}</td>
@@ -65,12 +80,23 @@
     <div *ngIf="!loading && tab==='users'" class="fade-in">
       <div class="table-wrap">
         <table class="table">
-          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Change Role</th><th>Action</th></tr></thead>
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Change Role</th><th>Action</th></tr>
+          </thead>
           <tbody>
             <tr *ngFor="let u of allUsers">
-              <td><div class="user-cell"><div class="av">{{u.firstName[0]}}{{u.lastName[0]}}</div><span>{{u.firstName}} {{u.lastName}}</span></div></td>
+              <td>
+                <div class="user-cell">
+                  <div class="av">{{u.firstName[0]}}{{u.lastName[0]}}</div>
+                  <span>{{u.firstName}} {{u.lastName}}</span>
+                </div>
+              </td>
               <td>{{u.email}}</td>
-              <td><span class="badge" [ngClass]="u.role==='Admin'?'badge-danger':u.role==='Teacher'?'badge-info':'badge-success'">{{u.role}}</span></td>
+              <td>
+                <span class="badge" [ngClass]="u.role==='Admin'?'badge-danger':u.role==='Teacher'?'badge-info':'badge-success'">
+                  {{u.role}}
+                </span>
+              </td>
               <td>
                 <span class="badge" [ngClass]="u.isApproved?'badge-success':'badge-warning'">
                   {{u.isApproved ? 'Approved' : 'Pending'}}
@@ -94,18 +120,54 @@
     <div *ngIf="!loading && tab==='courses'" class="fade-in">
       <div class="table-wrap">
         <table class="table">
-          <thead><tr><th>Title</th><th>Teacher</th><th>Category</th><th>Students</th><th>Status</th><th>Action</th></tr></thead>
+          <thead>
+            <tr><th>Title</th><th>Teacher</th><th>Category</th><th>Students</th><th>Status</th><th>Action</th></tr>
+          </thead>
           <tbody>
             <tr *ngFor="let c of allCourses">
               <td class="fw-600">{{c.title}}</td>
               <td>{{c.teacherFullName}}</td>
               <td><span class="badge badge-primary">{{c.category}}</span></td>
               <td>{{c.enrolledStudents}}</td>
-              <td><span class="badge" [ngClass]="c.status==='Published'?'badge-success':'badge-gray'">{{c.status}}</span></td>
               <td>
-                <button class="btn btn-sm" [ngClass]="c.status==='Published'?'btn-warning':'btn-success'" (click)="toggleCourseStatus(c)">
+                <span class="badge" [ngClass]="c.status==='Published'?'badge-success':'badge-gray'">{{c.status}}</span>
+              </td>
+              <td>
+                <button class="btn btn-sm" [ngClass]="c.status==='Published'?'btn-warning':'btn-success'"
+                  (click)="toggleCourseStatus(c)">
                   {{c.status==='Published' ? 'Unpublish' : 'Publish'}}
                 </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RESETS TAB -->
+    <div *ngIf="!loading && tab==='resets'" class="fade-in">
+      <div class="empty-state" *ngIf="pendingResets.length===0">
+        <div class="icon">🔑</div>
+        <h3>No pending password resets</h3>
+        <p>All password reset requests have been reviewed!</p>
+      </div>
+      <div class="table-wrap" *ngIf="pendingResets.length>0">
+        <table class="table">
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Requested</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of pendingResets">
+              <td>
+                <div class="user-cell">
+                  <div class="av">{{r.firstName[0]}}{{r.lastName[0]}}</div>
+                  <span>{{r.firstName}} {{r.lastName}}</span>
+                </div>
+              </td>
+              <td>{{r.email}}</td>
+              <td>Pending</td>
+              <td>
+                <button class="btn btn-success btn-sm" (click)="approveReset(r.userId)">✅ Approve Reset</button>
               </td>
             </tr>
           </tbody>

@@ -15,11 +15,15 @@ import { StudentDashboardComponent } from './features/dashboard/student/student-
 import { TeacherDashboardComponent } from './features/dashboard/teacher/teacher-dashboard.component';
 import { AdminDashboardComponent } from './features/dashboard/admin/admin-dashboard.component';
 import { CourseDetailComponent } from './features/courses/course-detail/course-detail.component';
+import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
+import { HomeComponent } from './features/home/home.component';
+
 
 @NgModule({
   declarations: [
+    HomeComponent,
     AppComponent, NavbarComponent,
-    LoginComponent, RegisterComponent, PendingComponent,
+    LoginComponent, RegisterComponent, PendingComponent, ResetPasswordComponent,
     CourseDetailComponent, CourseListComponent,
     StudentDashboardComponent, TeacherDashboardComponent, AdminDashboardComponent
   ],
